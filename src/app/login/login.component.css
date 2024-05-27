@@ -1,0 +1,93 @@
+/* src/app/login/login.component.css */
+@keyframes glowingBackground {
+  0% {
+    box-shadow: 0 0 8px 3px rgba(255, 0, 0, 0.7);
+  }
+  25% {
+    box-shadow: 0 0 12px 6px rgba(255, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 15px 10px rgba(255, 0, 0, 0.8);
+  }
+  75% {
+    box-shadow: 0 0 10px 5px rgba(255, 0, 0, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 8px 3px rgba(255, 0, 0, 0.7);
+  }
+}
+
+.login-card {
+  background: rgb(255, 0, 0);
+  box-shadow: 0 4px 10px rgba(255, 0, 55, 0.3);
+  color: rgb(194,23,91);
+  width: 350px;
+  margin: auto;
+  padding: 20px;
+  border-radius: 8px;
+  animation: glowingBackground 10s infinite;
+}
+
+mat-card-title {
+  color: rgb(194,23,91);
+  text-align: center;
+}
+
+mat-form-field {
+  margin-top: 20px;
+}
+
+input {
+  caret-color: rgb(194,23,91);
+}
+
+button {
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(194, 23, 91, 0.459);
+}
+body {
+  background: url('https://i.pinimg.com/originals/fd/b2/1c/fdb21c0e4f3dbb6ccd9a63c68fce8645.gif') no-repeat center center fixed;
+  background-size: cover;
+  height: 100vh;
+  width: 100%;
+}
+
+.login-card {
+  background: rgba(0, 0, 0, 0.75);
+  box-shadow: 0 4px 10px rgba(255, 0, 0, 0.3);
+  color: rgb(194,23,91); /* Green text */
+  width: 350px;
+  margin: 100px auto;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.mat-card-title {
+  color: rgb(194,23,91);
+  text-align: center;
+}
+
+.mat-form-field {
+  width: 100%;
+  color: white;
+}
+
+form{
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+button {
+  margin-top: 20px;
+  width: 100%;
+  background-color: rgb(194,23,91);
+  color: black;
+}
+
+button:hover {
+  background-color: rgba(255, 0, 76, 0.466);
+}
+/* Keyframes for glowing animation */

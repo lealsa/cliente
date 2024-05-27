@@ -1,0 +1,97 @@
+<div class="card">
+  <div class="dock-window dock-advanced">
+      <p-dock [model]="dockItems" position="right">
+          <ng-template pTemplate="item" let-item>
+              <img [src]="item.icon" [alt]="item.label" width="100%" />
+          </ng-template>
+      </p-dock>
+      <p-dialog #help
+          [position]="'topleft'"
+          [(visible)]="displayFinder"
+          [breakpoints]="{ '960px': '50vw' }"
+          [style]="{ width: '30vw', height: '18rem' }"
+          [draggable]="true"
+          [resizable]="true">
+              <p-tree [value]="nodes" />
+      </p-dialog>
+      <p-dialog #terminal
+          [maximizable]="true"
+          [(visible)]="displayTerminal"
+          [breakpoints]="{ '960px': '50vw' }"
+          [style]="{ width: '30vw' }"
+          [draggable]="true"
+          [resizable]="true">
+              <p-terminal
+                  welcomeMessage="Bienvenido aventurero espacial {{ currentDate | date:'HH:mm EEE, MMM d' }}"
+                  prompt="terminal $" />
+      </p-dialog>
+
+      <p-dialog #ship class="transparent"
+      [position]="'bottomleft'"
+      [maximizable]="true"
+      [(visible)]="displayInfo"
+      [breakpoints]="{'960px': '50vw'}"
+      [style]="{width: '30vw'}"
+      [draggable]="true"
+      [resizable]="true">
+      <div class="ui-g" style="display: flex; flex-direction: column; background-color: transparent; margin:20px; padding:20px;">
+        <div style="display: flex; flex-direction: row; background-color: transparent; padding:20px;justify-content: space-around;align-items: center;">
+            <div class="ui-g-12 ui-md-4" style="border-radius: 20px;">
+                <img src="
+
+                https://c0.klipartz.com/pngpicture/875/400/gratis-png-arte-abstracto-amarillo-y-negro-arte-espacial-sprite-creatividad-de-nave-espacial-nave-espacial-thumbnail.png
+
+                " style="max-width: 256px; background-color: transparent; border-radius: 40px;">
+            </div>
+            <div class="ui-g-12 ui-md-8" style="background-color: transparent; border-radius: 40px; margin: 20px;">
+                <p-panel header="Zuil's Strttttttttttttttttttats" >
+                    <ul>
+                        <li>Velocidad: 38</li>
+                        <li>Carga: 30/30</li>
+                        <li>Tripulacion: 0.00</li>
+                        <li>Creditos: 1.00</li>
+                    </ul>
+                </p-panel>
+            </div>
+        </div>
+        <div class="ui-g-12 transparent">
+            <p-tabView class="transparent">
+                <p-tabPanel header="Inventario" class="transparent">
+                    <div class="inventory transparent" >
+                        <div  pBadge value="2"  badgeSize="xlarge" class="inventory-item" *ngFor="let item of inventoryItems" >
+                          <span>{{item.nombre}}</span>
+                          <img src="{{item.imagen}}" alt="{{item.nombre}}" style="width: 100px; height: 100px;">
+                        </div>
+                    </div>
+                </p-tabPanel>
+            </p-tabView>
+        </div>
+    </div>
+
+  </p-dialog>
+
+  <p-dialog #star
+  [position]="'bottomright'"
+  [maximizable]="true"
+  [(visible)]="displayStar"
+  [breakpoints]="{ '960px': '50vw' }"
+  [style]="{ width: '30vw' }"
+  [draggable]="true"
+  [resizable]="true">
+
+  </p-dialog>
+
+      <p-dialog #profile
+      [position]="'bottom'"
+      [maximizable]="true"
+      [(visible)]="displayProfile"
+      [breakpoints]="{ '960px': '50vw' }"
+      [style]="{ width: '30vw' }"
+      [draggable]="true"
+      [resizable]="true">
+
+      </p-dialog>
+
+  </div>
+
+</div>
