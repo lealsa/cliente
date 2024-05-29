@@ -16,7 +16,7 @@ export class Producto {
     this.volumen = volumen;
   }
 
-  toJSON() {
+  toJSON(): { id: number; nombre: string; imagen: string; volumen: number } {
     return {
       id: this.id,
       nombre: this.nombre,
@@ -33,7 +33,4 @@ export class Producto {
       json.volumen
     );
   }
-
-
 }
-

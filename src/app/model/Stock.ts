@@ -1,46 +1,46 @@
 export class Stock {
   id: number;
-  planeta: number; // Make sure Planeta class is already defined and imported.
-  producto: number; // Make sure Producto class is already defined and imported.
+  planeta: number; // ID del planeta
+  producto: number; // ID del producto
   stock: number;
-  FD: number; // Factor de Demanda
-  FO: number; // Factor de Oferta
+  factorDemanda: number; // FD
+  factorOferta: number; // FO
 
   constructor(
     id: number = 0,
     planeta: number,
     producto: number,
     stock: number = 0,
-    FD: number = 1,
-    FO: number = 1
+    factorDemanda: number = 1,
+    factorOferta: number = 1
   ) {
     this.id = id;
     this.planeta = planeta;
     this.producto = producto;
     this.stock = stock;
-    this.FD = FD;
-    this.FO = FO;
+    this.factorDemanda = factorDemanda;
+    this.factorOferta = factorOferta;
   }
 
-  toJSON() {
+  toJSON(): { id: number; planeta: number; producto: number; stock: number; factorDemanda: number; factorOferta: number } {
     return {
       id: this.id,
-      planeta: this.planeta, // Serialize planeta to JSON
-      producto: this.producto, // Serialize producto to JSON
+      planeta: this.planeta,
+      producto: this.producto,
       stock: this.stock,
-      FD: this.FD,
-      FO: this.FO
+      factorDemanda: this.factorDemanda,
+      factorOferta: this.factorOferta
     };
   }
 
   static fromJSON(json: any): Stock {
     return new Stock(
       json.id,
-      json.Planeta,
-      json.Producto,
+      json.planeta,
+      json.producto,
       json.stock,
-      json.FD,
-      json.FO
+      json.factorDemanda,
+      json.factorOferta
     );
   }
 }

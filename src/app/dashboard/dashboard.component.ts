@@ -1,13 +1,18 @@
 // dashboard.component.ts
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../guard/auth.service';
+import { ApiService } from '../service/api.service';
 import { User } from '../model/Usuario';
 import { OnDestroy } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { MenuItem, MessageService } from 'primeng/api';
 import { TerminalService } from 'primeng/terminal';
 import { Subscription } from 'rxjs';
 import { GameService } from '../guard/game.service';
 import { Producto } from '../model/Producto';
+import { Partida } from '../model/Partida';
+import { Estrella } from '../model/Estrella';
 
 @Component({
   selector: 'app-dashboard',
@@ -49,14 +54,18 @@ export class DashboardComponent implements OnInit {
   }
 
   return products;
-};
+    };
+    partidaExistente: boolean = false;
+
+    partida: Partida | null = null;
+
     displayTerminal: boolean = false;
 
     displayFinder: boolean = false;
 
     displayProfile: boolean = false;
 
-    displayInfo: boolean = true;
+    displayInfo: boolean = false;
 
     displayStar: boolean = false;
 
@@ -77,7 +86,9 @@ export class DashboardComponent implements OnInit {
 
     private intervalId: any;
 
-    constructor(private AuthService: AuthService, private messageService: MessageService, private terminalService: TerminalService, private gameService: GameService) {
+    estrellaSeleccionada: Estrella | undefined = undefined;
+
+    constructor(private ApiService: ApiService, private AuthService: AuthService, private messageService: MessageService, private terminalService: TerminalService, private gameService: GameService) {
       this.nodes = [
           {
               label: 'Comandos Disponibles',
@@ -137,6 +148,8 @@ export class DashboardComponent implements OnInit {
                       ]
                   }
       ];
+
+
   }
     ngOnInit() {
         this.dockItems = [
@@ -227,13 +240,38 @@ export class DashboardComponent implements OnInit {
         this.intervalId = setInterval(() => {
           this.currentDate = new Date(); // Update the current date every second
         }, 1000);
-
+        this.cargarPartida();
       }
-      commandHandler(text: any) {
-        let response;
-        let argsIndex = text.indexOf(' ');
-        let command = argsIndex !== -1 ? text.substring(0, argsIndex) : text;
-        let args = argsIndex !== -1 ? text.substring(argsIndex + 1) : '';
+      commandHandler(text: string) {
+        let response: Observable<any> | string | undefined;
+        const argsIndex = text.indexOf(' ');
+        const command = argsIndex !== -1 ? text.substring(0, argsIndex) : text;
+        const args = argsIndex !== -1 ? text.substring(argsIndex + 1) : '';
+
+        // Verificar si el usuario está autenticado
+
+        // Obtener el rol del usuario autenticado
+        const userRole = this.AuthService.getUserRole();
+
+        // Comandos disponibles según el rol
+        const pilotCommands = ['viajar', 'estrellasCercanas', 'radar'];
+        const traderCommands = ['comprar', 'vender', 'inventario'];
+
+        // Comprobar si el comando es adecuado para el rol del jugador
+        if (pilotCommands.includes(command) && userRole !== 'Piloto' && userRole !== 'Capitán') {
+            this.terminalService.sendResponse("No tienes permiso para ejecutar este comando.");
+            return;
+        }
+        if (traderCommands.includes(command) && userRole !== 'Comerciante' && userRole !== 'Capitán') {
+            this.terminalService.sendResponse("No tienes permiso para ejecutar este comando.");
+            return;
+        }
+
+
+        if (!this.partidaExistente && !['crear', 'unirse', 'log-out', 'help'].includes(command)) {
+            this.terminalService.sendResponse("Por favor, únete o crea una tripulación para acceder a esta función.");
+            return;
+        }
 
         switch (command) {
             case "help":
@@ -242,56 +280,71 @@ export class DashboardComponent implements OnInit {
             case "viajar":
                 response = this.gameService.travel(args);
                 break;
+            case "rol":
+                const newRole = args;
+                if (!newRole) {
+                    response = 'Por favor, proporciona un nuevo rol.';
+                } else {
+                    response = this.gameService.updateUserRole(newRole).pipe(
+                        map(res => `Rol del usuario actualizado a ${newRole}`),
+                        catchError(error => {
+                            console.error('Error actualizando el rol:', error);
+                            return of('Error al actualizar el rol');
+                        })
+                    );
+                }
+                break;
             case "crear":
                 response = this.gameService.crear(args);
                 break;
             case "unirse":
-                response = this.gameService.unirse(args);
+                response = this.gameService.unirse(parseInt(args));
                 break;
-            case "info":
-                response ="Abriendo informacion de la nave"
-                this.displayInfo=true
+            case "infoEstrella":
+                response = "Abriendo información de la estrella";
+                this.displayStar = true;
                 break;
-            case "estrellas":
-                response = this.gameService.list();
+            case "estrellasCercanas":
+                response = this.gameService.list(this.partida?.nave?.currentStar?.id ?? 0);
                 break;
             case "comprar":
-                response = this.gameService.handleTransaction(args, 'buy');
-                break;
-
             case "vender":
-                response = this.gameService.handleTransaction(args, 'sell');
-                break;
-
-            case 'log-out':
-                response = this.AuthService.logout();
-                break;
-
-            case 'greet':
-                response = 'Hola ' + args + '!';
+                response = this.gameService.handleTransaction(args, command);
                 break;
             case "inventario":
-                response = this.gameService.inv();
+                response = "Abriendo información del inventario";
+                this.displayInfo = true;
                 break;
             case "estadisticas":
-                response = this.gameService.stats();
+                response = "Abriendo información de la partida";
+                this.displayProfile = true;
                 break;
             case "radar":
                 response = this.gameService.radar();
                 break;
-            case 'saludos':
-                response = "Hola soy la terminal, en que puedo ayudarte";
+            case "saludos":
+                response = `Hola ${args}, en qué puedo ayudarte?`;
                 break;
-
+            case "log-out":
+                this.AuthService.logout(); // Asegúrate de que este método exista y sea adecuado
+                break;
             default:
-                response = 'Comando no reconocido, ingresa Help para mas ayuda';
+                response = 'Comando no reconocido, ingresa "help" para más ayuda';
                 break;
         }
 
-        if (response) {
-            this.terminalService.sendResponse(response as string);
+        if (response instanceof Observable) {
+            response.subscribe(
+                result => this.terminalService.sendResponse(result as string),
+                error => this.terminalService.sendResponse('Error procesando el comando')
+            );
+        } else if (response) {
+            this.terminalService.sendResponse(response);
         }
-    } displayHelp(): void {
+    }
+
+
+    displayHelp(): void {
       this.displayFinder =true;
   }
     ngOnDestroy() {
@@ -302,4 +355,24 @@ export class DashboardComponent implements OnInit {
             this.subscription.unsubscribe();
         }
     }
+    cargarPartida() {
+      const partidaData = localStorage.getItem('partida');
+      if (partidaData) {
+        this.partida = Partida.fromJSON(JSON.parse(partidaData));
+        this.partidaExistente = true;
+        this.estrellaSeleccionada = this.obtenerEstrellaActual();
+      }
+    }
+    obtenerEstrellaActual(): Estrella | undefined {
+      // Asegura que la partida y la nave existan antes de intentar acceder a la estrella
+      return this.partida?.nave?.currentStar;
+    }
+
+    obtenerNombreProducto(idProducto: number): Observable<string> {
+      return this.ApiService.getProductById(idProducto).pipe(
+        map(producto => producto ? producto.nombre : 'Producto desconocido')
+      );
+    }
+
+
 }

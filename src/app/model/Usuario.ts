@@ -1,31 +1,35 @@
 export class User {
   id: number;
   nombreUsuario: string;
-  contraseña: string; // Consider renaming to 'hashContrasena' if storing password hashes
+  contraseña: string;  // Consider storing only hashed passwords and rename if only hashes are stored
   rol: string;
-  foto: string;
 
   constructor(
     id: number = 0,
     nombreUsuario: string = '',
     contraseña: string = '',
     rol: string = '',
-    foto: string = ''
   ) {
     this.id = id;
     this.nombreUsuario = nombreUsuario;
-    this.contraseña = contraseña;
+    this.contraseña = contraseña;  // Ensure this is hashed if coming from user input
     this.rol = rol;
-    this.foto = foto;
   }
 
   toJSON() {
     return {
-      id: this.id??0,
+      id: this.id,
       nombreUsuario: this.nombreUsuario,
-      // Do not include contraseña field in JSON output for security reasons
+      // Exclude the contraseña field from the JSON output for security reasons
       rol: this.rol,
-      foto: this.foto
     };
+  }
+  static fromJSON(json: any): User {
+    return new User(
+      json.id,
+      json.nombreUsuario,
+      json.contraseña, // Be cautious with handling sensitive data like passwords
+      json.rol,
+    );
   }
 }

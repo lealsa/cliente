@@ -1,36 +1,31 @@
 export class Tripulacion {
   id: number;
-  usuario: number;
+  usuarioIds: number[]; // Adjusted to reflect a many-to-many relationship similar to Java's Set<Jugador>
   nave: number;
-  rol: string;
 
   constructor(
     id: number = 0,
-    usuario: number,
+    usuarioIds: number[] = [],
     nave: number,
-    rol: string = ''
   ) {
     this.id = id;
-    this.usuario = usuario;
+    this.usuarioIds = usuarioIds;
     this.nave = nave;
-    this.rol = rol;
   }
 
   toJSON() {
     return {
       id: this.id,
-      usuario: this.usuario,
-      nave: this.nave, // Assuming a light reference to avoid circular serialization
-      rol: this.rol
+      usuarioIds: this.usuarioIds, // Assuming this would be an array of user IDs
+      nave: this.nave,
     };
   }
 
   static fromJSON(json: any): Tripulacion {
     return new Tripulacion(
       json.id,
-      json.Usuario,
-      json.Nave, // Careful with circular references if Nave also stores Tripulacion
-      json.rol
+      json.usuarioIds, // Assuming the JSON contains an array of user IDs
+      json.nave,
     );
   }
 }

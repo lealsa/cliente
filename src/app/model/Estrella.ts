@@ -1,4 +1,5 @@
 import { Planeta } from "./Planeta";
+import { AgujeroDeGusano } from "./AgujeroDeGusano";
 
 export class Estrella {
   id: number;
@@ -7,8 +8,8 @@ export class Estrella {
   coordenadaY: number;
   coordenadaZ: number;
   imagen: string;
-  agujeroDeGusano: number;
   planetas: Planeta[];
+  agujerosDeGusano: AgujeroDeGusano[];
 
   constructor(
     id: number = 0,
@@ -17,8 +18,8 @@ export class Estrella {
     coordenadaY: number = 0,
     coordenadaZ: number = 0,
     imagen: string = '',
-    agujeroDeGusano: number = 0,
-    planetas: Planeta[] = []
+    planetas: Planeta[] = [],
+    agujerosDeGusano: AgujeroDeGusano[] = []
   ) {
     this.id = id;
     this.nombreEstrella = nombreEstrella;
@@ -26,11 +27,21 @@ export class Estrella {
     this.coordenadaY = coordenadaY;
     this.coordenadaZ = coordenadaZ;
     this.imagen = imagen;
-    this.agujeroDeGusano = agujeroDeGusano;
     this.planetas = planetas;
+    this.agujerosDeGusano = agujerosDeGusano;
   }
 
-  toJSON() {
+  // Define explícitamente el tipo de retorno de la función toJSON
+  toJSON(): {
+    id: number;
+    nombreEstrella: string;
+    coordenadaX: number;
+    coordenadaY: number;
+    coordenadaZ: number;
+    imagen: string;
+    planetas: any[];  // Utiliza un tipo más específico si tienes un tipo definido para la salida JSON de Planeta
+    agujerosDeGusano: any[];  // Utiliza un tipo más específico si tienes un tipo definido para la salida JSON de AgujeroDeGusano
+  } {
     return {
       id: this.id,
       nombreEstrella: this.nombreEstrella,
@@ -38,13 +49,13 @@ export class Estrella {
       coordenadaY: this.coordenadaY,
       coordenadaZ: this.coordenadaZ,
       imagen: this.imagen,
-      agujeroDeGusano: this.agujeroDeGusano,
-      planetas: this.planetas.map(planeta => planeta.toJSON())
+      planetas: this.planetas.map(planeta => planeta.toJSON()),
+      agujerosDeGusano: this.agujerosDeGusano.map(tunel => tunel.toJSON())
     };
   }
-
   static fromJSON(json: any): Estrella {
     const planetas = json.planetas.map((planetaJson: any) => Planeta.fromJSON(planetaJson));
+    const agujerosDeGusano = json.agujerosDeGusano.map((tunelJson: any) => AgujeroDeGusano.fromJSON(tunelJson));
     return new Estrella(
       json.id,
       json.nombreEstrella,
@@ -52,8 +63,8 @@ export class Estrella {
       json.coordenadaY,
       json.coordenadaZ,
       json.imagen,
-      json.agujeroDeGusano,
-      planetas
+      planetas,
+      agujerosDeGusano
     );
   }
 }

@@ -15,6 +15,19 @@ export class LoginComponent {
     private authService: AuthService,
     private notificationService: NotificationService // Inyecta el servicio de notificaciones
   ) {}
+  goToRegister(): void {
+    console.log("Register in...");
+    this.authService.register(this.username, this.password).subscribe({
+      next: (user) => {
+        console.log('Register successful', user);
+        this.notificationService.show('Login exitoso!', 'success', 'Bienvenido!');
+      },
+      error: (error) => {
+        console.error('Register failed', error);
+        this.notificationService.show('Fallo login.', 'error', 'Error de autenticacion');
+      }
+    });
+  }
 
   login() {
     console.log("Logging in...");

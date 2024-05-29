@@ -30,6 +30,9 @@ import { TabViewModule } from 'primeng/tabview';
 import { PanelModule } from 'primeng/panel';
 import { DataViewModule } from 'primeng/dataview'; // If you are using buttons inside your dialog
 import { BadgeModule } from 'primeng/badge';
+import { BlockUIModule } from 'primeng/blockui';
+import { SkeletonModule } from 'primeng/skeleton';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -37,6 +40,8 @@ import { BadgeModule } from 'primeng/badge';
     DashboardComponent,
   ],
   imports: [
+    BlockUIModule,
+    SkeletonModule,
     BadgeModule,
     PanelModule,
     TabViewModule,

@@ -31,6 +31,34 @@
     box-shadow: 0 0 8px 3px rgba(255, 0, 0, 0.7);
   }
 }
+.lock-overlay {
+  position: relative;
+  width: 480px;
+  height: 50vh;
+  margin: 20px;
+  padding: 10px;
+  border-radius: 16px;
+  background-color: rgba(113, 113, 113, 0.8); /* Semi-transparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.lock-icon {
+  width: 50px;
+  height: 50px;
+  background-image: url('https://www.svgrepo.com/show/408420/lock-security-open.svg'); /* Asegúrate de cambiar esto por la ruta a tu imagen de candado */
+  background-size: contain;
+  background-repeat: no-repeat;
+  margin-bottom: 20px;
+}
+
+.lock-message {
+  font-size: 18px;
+  color: #ffffff;
+}
+
 .inventory-item{
   background-color: #212121;
   margin: 10px;

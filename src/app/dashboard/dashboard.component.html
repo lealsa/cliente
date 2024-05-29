@@ -5,20 +5,24 @@
               <img [src]="item.icon" [alt]="item.label" width="100%" />
           </ng-template>
       </p-dock>
+
       <p-dialog #help
           [position]="'topleft'"
           [(visible)]="displayFinder"
           [breakpoints]="{ '960px': '50vw' }"
-          [style]="{ width: '30vw', height: '18rem' }"
+          [header]="'Ayuda'"
+          [style]="{width: '525px', height: '600px',backgroundColor: 'transparent'}"
           [draggable]="true"
           [resizable]="true">
-              <p-tree [value]="nodes" />
+              <p-tree [value]="nodes" [style]="{backgroundColor: 'transparent', color:'white'}"/>
       </p-dialog>
+
       <p-dialog #terminal
           [maximizable]="true"
           [(visible)]="displayTerminal"
           [breakpoints]="{ '960px': '50vw' }"
-          [style]="{ width: '30vw' }"
+          [header]="'Terminal'"
+          [style]="{width: '525px', height: '600px'}"
           [draggable]="true"
           [resizable]="true">
               <p-terminal
@@ -26,15 +30,18 @@
                   prompt="terminal $" />
       </p-dialog>
 
-      <p-dialog #ship class="transparent"
+      <p-dialog #ship
       [position]="'bottomleft'"
       [maximizable]="true"
+      [header]="'Nave'"
+      [style]="{width: '525px', height: '600px'}"
       [(visible)]="displayInfo"
       [breakpoints]="{'960px': '50vw'}"
-      [style]="{width: '30vw'}"
       [draggable]="true"
       [resizable]="true">
-      <div class="ui-g" style="display: flex; flex-direction: column; background-color: transparent; margin:20px; padding:20px;">
+
+      <div *ngIf="partidaExistente; else noPartida">
+          <div class="ui-g" style="display: flex; flex-direction: column; background-color: transparent; margin:20px; padding:20px;">
         <div style="display: flex; flex-direction: row; background-color: transparent; padding:20px;justify-content: space-around;align-items: center;">
             <div class="ui-g-12 ui-md-4" style="border-radius: 20px;">
                 <img src="
@@ -66,91 +73,99 @@
                 </p-tabPanel>
             </p-tabView>
         </div>
+      </div>
     </div>
+    <ng-template #noPartida>
+      <div class="lock-overlay">
+        <div class="lock-icon"></div>
+        <div class="lock-message">No tienes ninguna partida</div>
+      </div>
+    </ng-template>
 
-  </p-dialog>
+      </p-dialog>
 
-    <p-dialog #star
-    class="transparent"
-    [position]="'bottomright'"
-    [maximizable]="true"
-    [(visible)]="displayStar"
-    [breakpoints]="{ '960px': '50vw' }"
-    [style]="{ width: '30vw' }"
-    [draggable]="true"
-    [resizable]="true">
-    <div class="ui-g" style="display: flex; flex-direction: column; background-color: transparent; margin: 20px; padding: 20px;">
-        <div style="display: flex; flex-direction: row; background-color: transparent; padding: 20px; justify-content: space-around; align-items: center;">
-        <div class="ui-g-12 ui-md-4" style="border-radius: 20px;">
-            <img src="https://w7.pngwing.com/pngs/146/912/png-transparent-star-sprite-stars-angle-image-file-formats-stars.png"
-                style="max-width: 150px; background-color: transparent; border-radius: 10px;">
-        </div>
-        <div class="ui-g-12 ui-md-8" style="background-color: transparent; border-radius: 40px; margin: 20px;">
-            <p-panel header="Información de la Estrella">
-            <p>Nombre: Sol</p>
-            <p>Coordenada X: 0</p>
-            <p>Coordenada Y: 0</p>
-            <p>Coordenada Z: 0</p>
+      <p-dialog #star
+      [position]="'bottomright'"
+      [maximizable]="true"
+      [(visible)]="displayStar"
+      [breakpoints]="{'960px': '50vw'}"
+      [header]="'Estrella'"
+      [style]="{width: '525px', height: '600px'}"
+      [draggable]="true"
+      [resizable]="true">
+
+      <div *ngIf="partidaExistente; else noPartida">
+        <div class="ui-g" style="display: flex; flex-direction: column; background-color: transparent; margin:20px; padding:20px;">
+          <div style="display: flex; flex-direction: row; background-color: transparent; padding:20px; justify-content: space-around; align-items: center;">
+            <div class="ui-g-12 ui-md-4" style="border-radius: 20px;">
+              <img [src]="estrellaSeleccionada?.imagen" style="max-width: 150px; background-color: transparent; border-radius: 10px;">
+            </div>
+            <div class="ui-g-12 ui-md-8" style="background-color: transparent; border-radius: 40px; margin: 20px;">
+              <p-panel header="Información de la Estrella">
+                <p>Nombre: {{ estrellaSeleccionada?.nombreEstrella }}</p>
+                <p>Coordenada X: {{ estrellaSeleccionada?.coordenadaX }}</p>
+                <p>Coordenada Y: {{ estrellaSeleccionada?.coordenadaY }}</p>
+                <p>Coordenada Z: {{ estrellaSeleccionada?.coordenadaZ }}</p>
+              </p-panel>
+            </div>
+          </div>
+          <div class="ui-g-12 transparent">
+            <p-panel header="Agujeros de Gusano">
+              <ul style="list-style-type: none; padding: 0;">
+              <li *ngFor="let agujero of estrellaSeleccionada?.agujerosDeGusano">
+                {{ agujero.estrellaInicio.nombreEstrella }} a {{ agujero.estrellaFin.nombreEstrella }}
+              </li>
+              </ul>
             </p-panel>
+            <p-panel header="Planetas">
+              <div *ngFor="let planeta of estrellaSeleccionada?.planetas" style="margin-bottom: 1rem;">
+                <h4>{{ planeta.nombrePlaneta }}</h4>
+                <div *ngFor="let stock of planeta.inventario">
+                  <p>Producto: {{ obtenerNombreProducto(stock.producto) }}</p>
+                  <p>Factor Oferta: {{ stock.factorOferta }}</p>
+                  <p>Factor Demanda: {{ stock.factorDemanda }}</p>
+                  <p>Stock: {{ stock.stock }}</p>
+                </div>
+              </div>
+            </p-panel>
+          </div>
         </div>
+      </div>
+      <ng-template #noPartida>
+        <div class="lock-overlay">
+          <div class="lock-icon"></div>
+          <div class="lock-message">No tienes ninguna partida</div>
         </div>
-        <div class="ui-g-12 transparent">
-        <p-panel header="Agujeros de Gusano">
-            <ul style="list-style-type: none; padding: 0;">
-            <li>Agujero de Gusano 1</li>
-            <li>Agujero de Gusano 2</li>
-            </ul>
-        </p-panel>
-        <p-panel header="Planetas">
-            <div style="margin-bottom: 1rem;">
-            <h4>Mercurio</h4>
-            <p>Factor Oferta: 1.2</p>
-            <p>Factor Demanda: 0.8</p>
-            <p>Stock: 50</p>
-            <p>Nombre de Producto: Mineral X</p>
-            </div>
-            <div style="margin-bottom: 1rem;">
-            <h4>Venus</h4>
-            <p>Factor Oferta: 1.1</p>
-            <p>Factor Demanda: 0.9</p>
-            <p>Stock: 30</p>
-            <p>Nombre de Producto: Gas Y</p>
-            </div>
-            <div style="margin-bottom: 1rem;">
-            <h4>Tierra</h4>
-            <p>Factor Oferta: 1.5</p>
-            <p>Factor Demanda: 1.0</p>
-            <p>Stock: 70</p>
-            <p>Nombre de Producto: Agua Z</p>
-            </div>
-            <div style="margin-bottom: 1rem;">
-            <h4>Marte</h4>
-            <p>Factor Oferta: 1.3</p>
-            <p>Factor Demanda: 0.7</p>
-            <p>Stock: 20</p>
-            <p>Nombre de Producto: Hierro W</p>
-            </div>
-        </p-panel>
-        </div>
-    </div>
+      </ng-template>
     </p-dialog>
+
 
     <p-dialog #profile
     [position]="'bottom'"
     [maximizable]="true"
     [(visible)]="displayProfile"
     [breakpoints]="{ '960px': '50vw' }"
-    [style]="{ width: '30vw' }"
+    [header]="'Partida'"
+    [style]="{width: '525px', height: '600px'}"
     [draggable]="true"
     [resizable]="true">
-    <div class="profile-info">
+
+    <div *ngIf="partidaExistente; else noPartida">
+      <div class="profile-info" style="padding: 20px; margin: 20px;">
         <h2>Perfil del Usuario</h2>
-        <p>Tiempo: 1:23:45</p>
-        <p>Puntuación: 85</p>
-        <p>Tiempo Máximo: 2:00:00</p>
-        <p>Cuota: 75%</p>
+        <p>Tiempo: {{ partida?.tiempo}}</p>
+        <p>Puntuación: {{ partida?.puntaje }}</p>
+        <p>Tiempo Máximo: {{ partida?.tiempoMaximo | date:'HH:mm:ss' }}</p>
+        <p>Cuota: {{ partida?.cuota }}%</p>
+      </div>
     </div>
-    </p-dialog>
+    <ng-template #noPartida>
+      <div class="lock-overlay">
+        <div class="lock-icon"></div>
+        <div class="lock-message">No tienes ninguna partida</div>
+      </div>
+    </ng-template>
+  </p-dialog>
 
   </div>
 

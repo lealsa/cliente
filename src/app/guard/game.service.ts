@@ -1,46 +1,80 @@
 import { Injectable } from '@angular/core';
+import { ApiService } from '../service/api.service';
+import { Observable, catchError, of, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameService {
 
-  constructor() { }
-  unirse(args:string): string{
-    return `Te uniste a ${args}`;
+  constructor(private apiService: ApiService) { }
+
+  unirse(crewId: number): Observable<any> {
+    return this.apiService.joinCrew({ crewId });
   }
 
-  crear(args:string): string{
-
-    return `Creaste ${args}`;
-  }
-  travel(destination: string): string {
-    // Implement travel logic, considering wormhole connections, etc.
-    return `Navegando a ${destination}`;
-  }
-  list():string{
-    return "Estrellas mas cercanas"
-  }
-  info(star: string): string {
-      // Logic to calculate routes using wormhole connections
-      return `Route to ${star} calculated`;
+  crear(crewName: string): Observable<any> {
+    return this.apiService.createCrew({ name: crewName });
   }
 
-  handleTransaction(productDetails: string, type: string): string {
-      // Implement transaction logic (buy or sell)
-      return `${type === 'buy' ? 'Buying' : 'Selling'} ${productDetails}`;
+  travel(args: string): Observable<any> {
+    const [destinationId] = args.split(' ');
+    return this.apiService.travel({ destinationId: parseInt(destinationId) });
   }
-  inv(): string{
-    return "Inventario"
+
+  handleTransaction(args: string, type: string): Observable<any> {
+    const [productId, quantity] = args.split(' ');
+    const tradeRequest = { productId: parseInt(productId), quantity: parseInt(quantity) };
+    return type === 'buy' ? this.apiService.buyProduct(tradeRequest) : this.apiService.sellProduct(tradeRequest);
   }
-  stats(): string{
-    return "stats"
+  stats(): Observable<any> {
+    return new Observable(observer => {
+      observer.next("Estadísticas del juego");  // Placeholder
+      observer.complete();
+    });
   }
-  radar(): string{
-    return "radar"
+  updateUserRole(newRole: string): Observable<any> {
+    const userId = this.getUserIdFromLocalStorage(); // Suponiendo que el ID está almacenado en localStorage
+    if (!userId) {
+      return of('Usuario no autenticado');
+    }
+    const userUpdate = { role: newRole };
+    return this.apiService.updateUser(userId, userUpdate).pipe(
+      tap(() => this.updateRoleInLocalStorage(newRole)),
+      catchError(error => {
+        console.error('Error actualizando el rol:', error);
+        return of('Error al actualizar el rol');
+      })
+    );
   }
-  authenticateUser(credentials: string): string {
-      // Implement user authentication
-      return `User authenticated`;
+
+  private getUserIdFromLocalStorage(): number | null {
+    const userData = localStorage.getItem('userData');
+    return userData ? JSON.parse(userData).userId : null;
+  }
+
+  private updateRoleInLocalStorage(newRole: string) {
+    const userData = localStorage.getItem('userData');
+    if (userData) {
+      const userObj = JSON.parse(userData);
+      userObj.role = newRole;
+      localStorage.setItem('userData', JSON.stringify(userObj));
+    }
+  }
+
+  radar(): Observable<any> {
+    return new Observable(observer => {
+      observer.next("Radar activo");  // Placeholder
+      observer.complete();
+    });
+  }
+  list(starId: number): Observable<any> {
+    // Llama al método listNearbyStars de ApiService
+    return this.apiService.listNearbyStars(starId);
+  }
+
+  authenticateUser(credentials: string): Observable<any> {
+    const [username, password] = credentials.split(' ');
+    return this.apiService.loginPlayer({ username, password });
   }
 }

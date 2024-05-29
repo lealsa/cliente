@@ -1,39 +1,58 @@
-import { Tripulacion } from "./Tripulacion";
+import { Nave } from "./Nave";
 
 export class Partida {
   id: number;
-  tripulacion: Tripulacion[]; // Ensure that the Tripulacion class is already defined and imported.
-  puntaje: number;
-  cuota: number;
+  tiempo: number;  // Tiempo transcurrido en la partida
+  puntaje: number;  // Score en el juego
+  tiempoMaximo: number;  // Tiempo máximo permitido para la partida
+  cuota: number;  // Cuota de entrada para la partida
+  creditos: number;  // Créditos ganados en el juego
+  nave: Nave;  // Nave asociada a la partida
+  tripulacionId:number;
 
   constructor(
     id: number = 0,
-    tripulacion: Tripulacion[] = [],
+    tiempo: number = 0,
     puntaje: number = 0,
-    cuota: number = 0
+    tiempoMaximo: number = 3,
+    cuota: number = 300,
+    creditos: number = 0,
+    nave: Nave = new Nave(),
+    tripulacionId: number,
   ) {
     this.id = id;
-    this.tripulacion = tripulacion;
+    this.tiempo = tiempo;
     this.puntaje = puntaje;
+    this.tiempoMaximo = tiempoMaximo;
     this.cuota = cuota;
+    this.creditos = creditos;
+    this.nave = nave;
+    this.tripulacionId = tripulacionId;
   }
 
   toJSON() {
     return {
       id: this.id,
-      tripulacion: this.tripulacion.map(member => member.toJSON()),  // Serialize each member of the tripulacion
+      tiempo: this.tiempo,
       puntaje: this.puntaje,
-      cuota: this.cuota
+      tiempoMaximo: this.tiempoMaximo,
+      cuota: this.cuota,
+      creditos: this.creditos,
+      tripulacionId: this.tripulacionId,
+      nave: this.nave.toJSON()  // Suponiendo que nave es relevante y necesita ser serializado.
     };
   }
 
   static fromJSON(json: any): Partida {
-    const tripulacion = json.tripulacion.map((memberJson: any) => Tripulacion.fromJSON(memberJson));
     return new Partida(
       json.id,
-      tripulacion,
+      json.tiempo,
       json.puntaje,
-      json.cuota
-    );
+      json.tiempoMaximo,
+      json.cuota,
+      json.creditos,
+      Nave.fromJSON(json.nave),
+    json.tripulacionId,
+  );
   }
 }
