@@ -13,6 +13,7 @@ import { GameService } from '../guard/game.service';
 import { Producto } from '../model/Producto';
 import { Partida } from '../model/Partida';
 import { Estrella } from '../model/Estrella';
+import { Nave } from '../model/Nave';
 
 @Component({
   selector: 'app-dashboard',
@@ -55,9 +56,11 @@ export class DashboardComponent implements OnInit {
 
   return products;
     };
-    partidaExistente: boolean = false;
+    partidaExistente: boolean = true;
 
     partida: Partida | null = null;
+
+    naveActual: Nave | null = null;
 
     displayTerminal: boolean = false;
 
@@ -305,7 +308,7 @@ export class DashboardComponent implements OnInit {
                 this.displayStar = true;
                 break;
             case "estrellasCercanas":
-                response = this.gameService.list(this.partida?.nave?.currentStar?.id ?? 0);
+                response = this.gameService.list(this.naveActual?.currentStar?.id ?? 0);
                 break;
             case "comprar":
             case "vender":
@@ -357,16 +360,29 @@ export class DashboardComponent implements OnInit {
     }
     cargarPartida() {
       const partidaData = localStorage.getItem('partida');
+      console.log(partidaData);
       if (partidaData) {
+
+      console.log("partidaData");
         this.partida = Partida.fromJSON(JSON.parse(partidaData));
+        console.log("INNNNN");
+        console.log(this.partida);
         this.partidaExistente = true;
         this.estrellaSeleccionada = this.obtenerEstrellaActual();
       }
     }
     obtenerEstrellaActual(): Estrella | undefined {
       // Asegura que la partida y la nave existan antes de intentar acceder a la estrella
-      return this.partida?.nave?.currentStar;
+      const naveData = localStorage.getItem('nave');
+      console.log(naveData);
+      if (naveData) {
+
+      this.naveActual = Nave.fromJSON(JSON.parse(naveData));
+      console.log(this.naveActual.currentStar);
+      return this.naveActual?.currentStar;
     }
+    return undefined;
+  }
 
     obtenerNombreProducto(idProducto: number): Observable<string> {
       return this.ApiService.getProductById(idProducto).pipe(

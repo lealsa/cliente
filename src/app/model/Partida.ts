@@ -7,7 +7,6 @@ export class Partida {
   tiempoMaximo: number;  // Tiempo máximo permitido para la partida
   cuota: number;  // Cuota de entrada para la partida
   creditos: number;  // Créditos ganados en el juego
-  nave: Nave;  // Nave asociada a la partida
   tripulacionId:number;
 
   constructor(
@@ -17,7 +16,6 @@ export class Partida {
     tiempoMaximo: number = 3,
     cuota: number = 300,
     creditos: number = 0,
-    nave: Nave = new Nave(),
     tripulacionId: number,
   ) {
     this.id = id;
@@ -26,7 +24,6 @@ export class Partida {
     this.tiempoMaximo = tiempoMaximo;
     this.cuota = cuota;
     this.creditos = creditos;
-    this.nave = nave;
     this.tripulacionId = tripulacionId;
   }
 
@@ -38,8 +35,7 @@ export class Partida {
       tiempoMaximo: this.tiempoMaximo,
       cuota: this.cuota,
       creditos: this.creditos,
-      tripulacionId: this.tripulacionId,
-      nave: this.nave.toJSON()  // Suponiendo que nave es relevante y necesita ser serializado.
+      tripulacionId: this.tripulacionId, // Suponiendo que nave es relevante y necesita ser serializado.
     };
   }
 
@@ -51,7 +47,6 @@ export class Partida {
       json.tiempoMaximo,
       json.cuota,
       json.creditos,
-      Nave.fromJSON(json.nave),
     json.tripulacionId,
   );
   }

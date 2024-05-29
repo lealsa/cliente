@@ -10,7 +10,6 @@ export class Nave {
   capacidadCarga: number;
   velocidadMaxima: number;
   tripulacion: Tripulacion[];
-  inventarioNave: InventarioNave[];
   currentStar?: Estrella;
   planeta?: Planeta;
   tripulacionId?: number;
@@ -22,7 +21,6 @@ export class Nave {
     capacidadCarga: number = 0,
     velocidadMaxima: number = 0,
     tripulacion: Tripulacion[] = [],
-    inventarioNave: InventarioNave[] = [],
     currentStar?: Estrella,
     planeta?: Planeta,
     tripulacionId?: number,
@@ -33,7 +31,6 @@ export class Nave {
     this.capacidadCarga = capacidadCarga;
     this.velocidadMaxima = velocidadMaxima;
     this.tripulacion = tripulacion;
-    this.inventarioNave = inventarioNave;
     this.currentStar = currentStar;
     this.planeta = planeta;
     this.tripulacionId = tripulacionId;
@@ -45,7 +42,6 @@ export class Nave {
     capacidadCarga: number;
     velocidadMaxima: number;
     tripulacion: ReturnType<typeof Tripulacion.prototype.toJSON>[];
-    inventarioNave: ReturnType<typeof InventarioNave.prototype.toJSON>[];
     currentStar?: ReturnType<typeof Estrella.prototype.toJSON>;
     planeta?: ReturnType<typeof Planeta.prototype.toJSON>;
     tripulacionId?: number;
@@ -57,14 +53,12 @@ export class Nave {
       capacidadCarga: this.capacidadCarga,
       velocidadMaxima: this.velocidadMaxima,
       tripulacion: this.tripulacion.map(member => member.toJSON()),
-      inventarioNave: this.inventarioNave.map(item => item.toJSON()),
       currentStar: this.currentStar?.toJSON(),
       planeta: this.planeta?.toJSON(),
       tripulacionId: this.tripulacionId,
     };
   }
   static fromJSON(json: any): Nave {
-    const inventarioNave = json.inventarioNave.map((itemJson: any) => InventarioNave.fromJSON(itemJson));
     return new Nave(
       json.id,
       json.foto,
@@ -72,7 +66,6 @@ export class Nave {
       json.capacidadCarga,
       json.velocidadMaxima,
       json.tripulacionId,
-      inventarioNave,
       json.currentStar ? Estrella.fromJSON(json.currentStar) : undefined,
       json.planeta ? Planeta.fromJSON(json.planeta) : undefined
     );

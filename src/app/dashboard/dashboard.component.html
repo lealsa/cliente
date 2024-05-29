@@ -33,30 +33,25 @@
       <p-dialog #ship
       [position]="'bottomleft'"
       [maximizable]="true"
-      [header]="'Nave'"
+      [header]="naveActual?.nombreNave || 'Nave'"
       [style]="{width: '525px', height: '600px'}"
       [(visible)]="displayInfo"
       [breakpoints]="{'960px': '50vw'}"
       [draggable]="true"
       [resizable]="true">
 
-      <div *ngIf="partidaExistente; else noPartida">
+      <div *ngIf="naveActual; else noPartida">
           <div class="ui-g" style="display: flex; flex-direction: column; background-color: transparent; margin:20px; padding:20px;">
         <div style="display: flex; flex-direction: row; background-color: transparent; padding:20px;justify-content: space-around;align-items: center;">
             <div class="ui-g-12 ui-md-4" style="border-radius: 20px;">
-                <img src="
-
-                https://c0.klipartz.com/pngpicture/875/400/gratis-png-arte-abstracto-amarillo-y-negro-arte-espacial-sprite-creatividad-de-nave-espacial-nave-espacial-thumbnail.png
-
-                " style="max-width: 256px; background-color: transparent; border-radius: 40px;">
+                <img [src]="naveActual?.foto || 'default-image-url'" style="max-width: 256px; background-color: transparent; border-radius: 40px;">
             </div>
             <div class="ui-g-12 ui-md-8" style="background-color: transparent; border-radius: 40px; margin: 20px;">
-                <p-panel header="Zuil's Strttttttttttttttttttats" >
+                <p-panel header="{{naveActual?.nombreNave}}'s Stats">
                     <ul>
-                        <li>Velocidad: 38</li>
-                        <li>Carga: 30/30</li>
-                        <li>Tripulacion: 0.00</li>
-                        <li>Creditos: 1.00</li>
+                        <li>Velocidad: {{naveActual?.velocidadMaxima}}</li>
+                        <li>Carga: {{naveActual?.capacidadCarga}}/{{naveActual?.capacidadCarga}}</li>
+                        <li>Tripulacion: {{naveActual?.tripulacion}}</li>
                     </ul>
                 </p-panel>
             </div>
@@ -65,9 +60,9 @@
             <p-tabView class="transparent">
                 <p-tabPanel header="Inventario" class="transparent">
                     <div class="inventory transparent" >
-                        <div  pBadge value="2"  badgeSize="xlarge" class="inventory-item" *ngFor="let item of inventoryItems" >
+                        <div pBadge value="{{item.volumen}}" badgeSize="xlarge" class="inventory-item" *ngFor="let item of inventoryItems" >
                           <span>{{item.nombre}}</span>
-                          <img src="{{item.imagen}}" alt="{{item.nombre}}" style="width: 100px; height: 100px;">
+                          <img [src]="item.imagen" alt="{{item.nombre}}" style="width: 100px; height: 100px;">
                         </div>
                     </div>
                 </p-tabPanel>
@@ -81,8 +76,8 @@
         <div class="lock-message">No tienes ninguna partida</div>
       </div>
     </ng-template>
+</p-dialog>
 
-      </p-dialog>
 
       <p-dialog #star
       [position]="'bottomright'"

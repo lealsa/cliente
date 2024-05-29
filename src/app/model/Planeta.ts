@@ -1,7 +1,7 @@
 import { Estrella } from "./Estrella";
 import { Nave } from "./Nave";
 import { Producto } from "./Producto";
-import { Stock } from "./Stock";  // Asegúrate de tener una clase StockPlaneta si decides manejar el inventario de forma explícita.
+import { Stock } from "./Stock";
 
 export class Planeta {
   id: number;
@@ -9,7 +9,7 @@ export class Planeta {
   imagen: string;
   productos: Producto[];
   naves: Nave[];
-  inventario: Stock[];  // Inventario en términos de StockPlaneta si está definido.
+  inventario: Stock[];
   estrella: Estrella;
 
   constructor(
@@ -35,17 +35,19 @@ export class Planeta {
       id: this.id,
       nombrePlaneta: this.nombrePlaneta,
       imagen: this.imagen,
-      productos: this.productos.map(producto => producto.toJSON()),
-      naves: this.naves.map(nave => nave.toJSON()),
-      inventario: this.inventario.map(stock => stock.toJSON()),
-      estrella: this.estrella.toJSON()
+      productos: this.productos ? this.productos.map(producto => producto.toJSON()) : [],
+      naves: this.naves ? this.naves.map(nave => nave.toJSON()) : [],
+      inventario: this.inventario ? this.inventario.map(stock => stock.toJSON()) : [],
+      estrella: this.estrella ? this.estrella.toJSON() : null
     };
   }
 
   static fromJSON(json: any): Planeta {
-    const productos = json.productos.map((productoJson: any) => Producto.fromJSON(productoJson));
-    const naves = json.naves.map((naveJson: any) => Nave.fromJSON(naveJson));
-    const inventario = json.inventario.map((stockJson: any) => Stock.fromJSON(stockJson));
+    const productos = Array.isArray(json.productos) ? json.productos.map((productoJson: any) => Producto.fromJSON(productoJson)) : [];
+    const naves = Array.isArray(json.naves) ? json.naves.map((naveJson: any) => Nave.fromJSON(naveJson)) : [];
+    const inventario = Array.isArray(json.inventario) ? json.inventario.map((stockJson: any) => Stock.fromJSON(stockJson)) : [];
+    const estrella = json.estrella ? Estrella.fromJSON(json.estrella) : new Estrella();
+
     return new Planeta(
       json.id,
       json.nombrePlaneta,
@@ -53,7 +55,7 @@ export class Planeta {
       productos,
       naves,
       inventario,
-      Estrella.fromJSON(json.estrella)
+      estrella
     );
   }
 }
